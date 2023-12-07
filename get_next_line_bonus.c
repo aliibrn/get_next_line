@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: abbouram <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/06 23:28:41 by abbouram          #+#    #+#             */
-/*   Updated: 2023/12/07 18:44:59 by abbouram         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "get_next_line.h"
 
@@ -94,14 +83,14 @@ static char	*ft_update_data(char *databuf)
 char	*get_next_line(int fd)
 {
 	char		*line;
-	static char	*databuf;
+	static char	*databuf[FD_SETSIZE];
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || fd >= FD_SETSIZE)
 		return (0);
-	databuf = ft_read_to_data_buf(fd, databuf);
-	if (!databuf)
+	databuf[fd] = ft_read_to_data_buf(fd, databuf[fd]);
+	if (!databuf[fd])
 		return (NULL);
-	line = ft_get_line(databuf);
-	databuf = ft_update_data(databuf);
+	line = ft_get_line(databuf[fd]);
+	databuf[fd] = ft_update_data(databuf[fd]);
 	return (line);
 }
